@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CPAY Dashboard — Login</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="login-page">
+
+  <div class="card login-box">
+    <!-- Logo -->
+    <div class="login-logo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+        <polyline points="9 12 11 14 15 10"/>
+      </svg>
+      <h1>CPAY <span>Dashboard</span></h1>
+      <p>Observabilidade &amp; Segurança de API</p>
+    </div>
+
+    <!-- Formulário -->
+    <form id="login-form" autocomplete="off">
+      <div id="login-error" class="login-error hidden"></div>
+
+      <div class="form-group">
+        <label for="username">Usuário</label>
+        <input
+          id="username" type="text"
+          placeholder="Digite seu usuário"
+          autocomplete="username"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">Senha</label>
+        <input
+          id="password" type="password"
+          placeholder="••••••••••••"
+          autocomplete="current-password"
+          required
+        />
+      </div>
+
+      <button id="login-btn" type="submit" class="btn-primary">
+        <span id="btn-text">Entrar</span>
+        <div id="btn-spinner" class="spinner hidden"></div>
+      </button>
+    </form>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="auth.js"></script>
+</body>
+</html>

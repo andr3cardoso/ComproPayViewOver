@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(curl -s --ssl-no-revoke -w '\\\\nHTTP:%{http_code}\\\\n' 'https://jgzifxjpdupgaqjllbpw.supabase.co/rest/v1/api_log?select=ip_address&or=\\(path.ilike.*x*,ip_address.ilike.*x*\\)&limit=1' -H 'apikey: sb_publishable_qcof5g6CuPCm9z6dbWxfLQ_h0IMn9lW')",
+      "Bash(curl -s --ssl-no-revoke -w '\\\\nHTTP:%{http_code}\\\\n' 'https://jgzifxjpdupgaqjllbpw.supabase.co/rest/v1/api_log?select=id&created_at=gte.2026-06-27T00:00:00Z&limit=1' -H 'apikey: sb_publishable_qcof5g6CuPCm9z6dbWxfLQ_h0IMn9lW')"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+# Credenciais — nunca commitar
+environment.env
+
+# Gerado pelo serve.js com credenciais reais — nunca commitar
+config.js

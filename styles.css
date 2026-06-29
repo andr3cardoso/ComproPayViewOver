@@ -17,8 +17,8 @@
   --text:       #e2e8f0;
   --text-dim:   #8899aa;
   --text-faint: #445566;
-  --font-sans:  'Inter', system-ui, sans-serif;
-  --font-mono:  'JetBrains Mono', 'Fira Code', monospace;
+  --font-sans:  system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-mono:  'Cascadia Code', 'Fira Code', 'Consolas', monospace;
   --radius:     10px;
   --radius-lg:  16px;
   --shadow:     0 4px 24px rgba(0,0,0,0.4);
@@ -250,46 +250,39 @@ body::before {
 .kpi-value { font-size: 2rem; font-weight: 800; font-family: var(--font-mono); margin: 0.15rem 0; color: var(--kpi-color, var(--accent)); }
 .kpi-sub { font-size: 0.73rem; color: var(--text-dim); }
 
-/* ── Period bar (seletor rápido) ─────────────────────────────────────────────── */
-.period-bar {
-  display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap;
-  gap: 0.75rem;
-  padding: 0.75rem 1.25rem;
-  margin-bottom: 0.75rem;
-}
-.period-label-wrap { display: flex; align-items: center; gap: 0.4rem; font-size: 0.78rem; }
-.period-label-wrap svg { color: var(--accent); flex-shrink: 0; }
-.period-label-title { color: var(--text-dim); font-weight: 600; }
-.period-label-value { color: var(--accent); font-family: var(--font-mono); font-size: 0.75rem; }
-
-.quick-period-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
-.quick-period-btn {
-  padding: 0.35rem 0.8rem;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: rgba(255,255,255,0.04);
-  color: var(--text-dim);
-  font-size: 0.75rem;
-  font-weight: 700;
-  font-family: var(--font-mono);
-  cursor: pointer;
-  transition: all var(--transition);
-  letter-spacing: 0.03em;
-}
-.quick-period-btn:hover { border-color: var(--border-h); color: var(--accent); background: rgba(0,217,160,0.06); }
-.quick-period-btn.active { background: rgba(0,217,160,0.15); border-color: var(--accent); color: var(--accent); }
-
-/* ── Filter bar ──────────────────────────────────────────────────────────────── */
-.filter-bar {
-  display: flex; flex-wrap: wrap; gap: 0.6rem;
-  align-items: flex-end;
+/* ── Filter panel (topo, substitui period-bar + filter-bar) ─────────────────── */
+.filter-panel {
   padding: 1.25rem 1.5rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
 }
-.filter-bar .filter-section { display: flex; flex-direction: column; gap: 0.3rem; min-width: 120px; flex: 1; }
-.filter-bar label { font-size: 0.7rem; font-weight: 600; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.07em; }
-.filter-bar input, .filter-bar select {
-  padding: 0.5rem 0.75rem;
+
+.filter-panel-title {
+  display: flex; align-items: center; gap: 0.45rem;
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.08em; color: var(--text-dim);
+}
+.filter-panel-title svg { color: var(--accent); }
+
+.filter-row {
+  display: flex; flex-wrap: wrap; gap: 0.7rem;
+  align-items: flex-end;
+}
+
+.filter-group {
+  display: flex; flex-direction: column; gap: 0.3rem;
+  min-width: 110px; flex: 1;
+}
+.filter-group-wide { flex: 2; min-width: 200px; }
+
+.filter-group label {
+  font-size: 0.68rem; font-weight: 600;
+  color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.07em;
+}
+.filter-group input, .filter-group select {
+  padding: 0.48rem 0.75rem;
   background: rgba(255,255,255,0.04);
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -300,12 +293,63 @@ body::before {
   width: 100%;
   transition: border-color var(--transition);
 }
-.filter-bar input:focus, .filter-bar select:focus { border-color: var(--accent); }
-.filter-bar select option { background: #0f1724; }
+.filter-group input:focus, .filter-group select:focus { border-color: var(--accent); }
+.filter-group select option { background: #0f1724; }
 
-.filter-search-wide { flex: 2; min-width: 200px; }
+.quick-period-btns { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+.quick-period-btn {
+  padding: 0.38rem 0.8rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: rgba(255,255,255,0.04);
+  color: var(--text-dim);
+  font-size: 0.75rem; font-weight: 700;
+  font-family: var(--font-mono);
+  cursor: pointer;
+  transition: all var(--transition);
+}
+.quick-period-btn:hover { border-color: var(--border-h); color: var(--accent); background: rgba(0,217,160,0.06); }
+.quick-period-btn.active { background: rgba(0,217,160,0.15); border-color: var(--accent); color: var(--accent); }
 
-.filter-actions { display: flex; gap: 0.5rem; align-items: flex-end; flex-shrink: 0; }
+.filter-actions {
+  display: flex; gap: 0.5rem;
+  align-items: flex-end; flex-shrink: 0;
+}
+
+.btn-primary-accent {
+  background: rgba(0,217,160,0.15);
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 700;
+}
+.btn-primary-accent:hover {
+  background: rgba(0,217,160,0.25);
+  box-shadow: 0 0 12px rgba(0,217,160,0.2);
+}
+.btn-primary-accent:disabled {
+  opacity: 0.6; cursor: not-allowed;
+}
+
+.btn-spinner {
+  display: inline-block;
+  width: 11px; height: 11px;
+  border: 2px solid rgba(0,217,160,0.3);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  margin-right: 6px;
+  vertical-align: middle;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.filter-status-row {
+  display: flex; align-items: center; gap: 1.2rem; flex-wrap: wrap;
+  font-size: 0.75rem;
+  padding-top: 0.2rem;
+  border-top: 1px solid var(--border);
+}
+.period-label-value { color: var(--accent); font-family: var(--font-mono); }
+.result-count { color: var(--text-dim); }
 
 /* ── Charts grid ─────────────────────────────────────────────────────────────── */
 .charts-grid {
@@ -532,7 +576,9 @@ td { padding: 0.6rem 0.75rem; vertical-align: middle; white-space: nowrap; max-w
 .realtime-badge {
   display: flex; align-items: center; gap: 0.4rem;
   font-size: 0.7rem; color: var(--text-dim);
+  cursor: pointer; user-select: none;
 }
+.realtime-badge:hover { color: var(--accent); }
 .realtime-dot {
   width: 7px; height: 7px; border-radius: 50%;
   background: var(--text-faint);
@@ -555,8 +601,8 @@ td { padding: 0.6rem 0.75rem; vertical-align: middle; white-space: nowrap; max-w
   .topbar-meta { display: none; }
   .main-content { padding: 1rem; }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-  .filter-bar { padding: 1rem; }
-  .filter-section { min-width: 100px; }
+  .filter-panel { padding: 1rem; }
+  .filter-group { min-width: 100px; }
   .drawer { max-width: 100%; }
 }
 

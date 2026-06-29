@@ -66,7 +66,7 @@ const ENV = loadEnv();
 buildConfig(ENV);
 
 // ── Servidor HTTP estático ────────────────────────────────────────────────────
-http.createServer((req, res) => {
+const server = http.createServer((req, res) => {
   let pathname = decodeURIComponent(req.url.split('?')[0]);
   if (pathname === '/') pathname = '/index.html';
 
@@ -75,10 +75,28 @@ http.createServer((req, res) => {
 
   fs.readFile(file, (err, data) => {
     if (err) { res.writeHead(404); res.end('Não encontrado'); return; }
-    res.writeHead(200, { 'Content-Type': MIME[path.extname(file)] || 'text/plain' });
+    res.writeHead(200, {
+      'Content-Type': MIME[path.extname(file)] || 'text/plain',
+      // Sem cache — garante que o navegador sempre pegue a versão mais recente
+      'Cache-Control': 'no-store, no-cache, must-revalidate',
+      'Pragma': 'no-cache',
+    });
     res.end(data);
   });
-}).listen(PORT, '127.0.0.1', () => {
+});
+
+server.on('error', (err) => {
+  if (err.code === 'EADDRINUSE') {
+    console.error(`\n⚠  A porta ${PORT} já está em uso — provavelmente há um servidor antigo rodando.`);
+    console.error(`   Feche-o primeiro. No PowerShell:\n`);
+    console.error(`   Get-Process node | Stop-Process -Force\n`);
+    console.error(`   Depois rode 'node serve.js' de novo.\n`);
+    process.exit(1);
+  }
+  throw err;
+});
+
+server.listen(PORT, '127.0.0.1', () => {
   console.log(`✓ CPAY Dashboard em: http://localhost:${PORT}`);
   console.log(`  Ctrl+C para parar\n`);
 });

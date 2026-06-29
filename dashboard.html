@@ -4,8 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>CPAY Dashboard — Observabilidade</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body class="dashboard-page">
@@ -19,23 +17,9 @@
       </svg>
       <h1>CPAY <span>Dashboard</span></h1>
     </div>
-
-    <div class="realtime-badge" id="realtime-indicator">
-      <div class="realtime-dot" id="realtime-dot"></div>
-      <span id="realtime-status">Conectando…</span>
-    </div>
-
     <div class="topbar-spacer"></div>
     <span class="topbar-meta" id="last-refresh"></span>
-
     <div class="topbar-actions">
-      <button class="btn" id="refresh-btn" title="Recarregar dados">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
-        Atualizar
-      </button>
-      <button class="btn" id="auto-refresh-btn">
-        Auto-refresh: OFF
-      </button>
       <button class="btn" id="export-btn">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
         Exportar CSV
@@ -49,6 +33,108 @@
 
   <!-- ── Main ──────────────────────────────────────────────────────────────── -->
   <main class="main-content">
+
+    <!-- ── Painel de Filtros + Pesquisar (TOPO) ──────────────────────────── -->
+    <div class="card filter-panel" id="filter-panel">
+      <div class="filter-panel-title">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+        Filtros
+      </div>
+
+      <!-- Linha 1: período rápido + datas -->
+      <div class="filter-row">
+        <div class="filter-group">
+          <label>Período rápido</label>
+          <div class="quick-period-btns">
+            <button class="quick-period-btn" data-hours="1"     onclick="setQuickPeriod(1)">1h</button>
+            <button class="quick-period-btn" data-hours="6"     onclick="setQuickPeriod(6)">6h</button>
+            <button class="quick-period-btn" data-hours="24"    onclick="setQuickPeriod(24)">24h</button>
+            <button class="quick-period-btn" data-hours="today" onclick="setQuickPeriod('today')">Hoje</button>
+            <button class="quick-period-btn" data-hours="168"   onclick="setQuickPeriod(168)">7d</button>
+          </div>
+        </div>
+        <div class="filter-group">
+          <label for="filter-date-from">De</label>
+          <input id="filter-date-from" type="datetime-local" />
+        </div>
+        <div class="filter-group">
+          <label for="filter-date-to">Até</label>
+          <input id="filter-date-to" type="datetime-local" />
+        </div>
+        <div class="filter-group filter-group-wide">
+          <label for="filter-search">Busca (path / IP)</label>
+          <input id="filter-search" type="text" placeholder="Ex: /api/v1 ou 192.168…" />
+        </div>
+      </div>
+
+      <!-- Linha 2: selects + ações -->
+      <div class="filter-row">
+        <div class="filter-group">
+          <label for="filter-method">Método</label>
+          <select id="filter-method">
+            <option value="">Todos</option>
+            <option>GET</option>
+            <option>POST</option>
+            <option>PUT</option>
+            <option>PATCH</option>
+            <option>DELETE</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-status">Status</label>
+          <select id="filter-status">
+            <option value="">Todos</option>
+            <option value="2xx">2xx Sucesso</option>
+            <option value="3xx">3xx Redirect</option>
+            <option value="4xx">4xx Cliente</option>
+            <option value="5xx">5xx Servidor</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-auth">Auth Type</label>
+          <select id="filter-auth">
+            <option value="">Todos</option>
+            <option>AllowAnonymous</option>
+            <option>IgnoreAuthenticateAppDevice</option>
+            <option>Authenticated</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-ipclass">IP Class</label>
+          <select id="filter-ipclass">
+            <option value="">Todas</option>
+            <option value="cloudflare">Cloudflare</option>
+            <option value="external">External</option>
+            <option value="internal">Internal</option>
+          </select>
+        </div>
+        <div class="filter-group">
+          <label for="filter-suspicious">Suspeitos</label>
+          <select id="filter-suspicious">
+            <option value="">Todos</option>
+            <option value="yes">Apenas suspeitos</option>
+            <option value="no">Apenas seguros</option>
+          </select>
+        </div>
+        <div class="filter-actions">
+          <button class="btn btn-primary-accent" id="search-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            Pesquisar
+          </button>
+          <button class="btn" id="clear-filters-btn">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Limpar
+          </button>
+        </div>
+      </div>
+
+      <!-- Status da última consulta -->
+      <div class="filter-status-row">
+        <span id="period-label" class="period-label-value"></span>
+        <span class="result-count" id="result-count"></span>
+        <span class="topbar-meta" id="last-refresh-inline"></span>
+      </div>
+    </div>
 
     <!-- KPIs -->
     <section class="kpi-grid" id="kpi-grid">
@@ -109,114 +195,29 @@
 
     </section>
 
-    <!-- Seletor rápido de período -->
-    <div class="period-bar card">
-      <div class="period-label-wrap">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-        <span class="period-label-title">Período:</span>
-        <span id="period-label" class="period-label-value">—</span>
-      </div>
-      <div class="quick-period-btns">
-        <button class="quick-period-btn" data-hours="1"     onclick="setQuickPeriod(1)">1h</button>
-        <button class="quick-period-btn" data-hours="6"     onclick="setQuickPeriod(6)">6h</button>
-        <button class="quick-period-btn" data-hours="24"    onclick="setQuickPeriod(24)">24h</button>
-        <button class="quick-period-btn" data-hours="today" onclick="setQuickPeriod('today')">Hoje</button>
-        <button class="quick-period-btn" data-hours="168"   onclick="setQuickPeriod(168)">7d</button>
-      </div>
-    </div>
-
-    <!-- Filter bar -->
-    <div class="card filter-bar" id="filter-bar">
-      <div class="filter-section filter-search-wide">
-        <label for="filter-search">Busca (path / IP)</label>
-        <input id="filter-search" type="text" placeholder="Ex: /api/v1 ou 192.168…" />
-      </div>
-
-      <div class="filter-section">
-        <label for="filter-date-from">De</label>
-        <input id="filter-date-from" type="datetime-local" />
-      </div>
-
-      <div class="filter-section">
-        <label for="filter-date-to">Até</label>
-        <input id="filter-date-to" type="datetime-local" />
-      </div>
-
-      <div class="filter-section">
-        <label for="filter-method">Método</label>
-        <select id="filter-method">
-          <option value="">Todos</option>
-          <option>GET</option>
-          <option>POST</option>
-          <option>PUT</option>
-          <option>PATCH</option>
-          <option>DELETE</option>
-        </select>
-      </div>
-
-      <div class="filter-section">
-        <label for="filter-status">Status</label>
-        <select id="filter-status">
-          <option value="">Todos</option>
-          <option value="2xx">2xx Sucesso</option>
-          <option value="3xx">3xx Redirect</option>
-          <option value="4xx">4xx Cliente</option>
-          <option value="5xx">5xx Servidor</option>
-        </select>
-      </div>
-
-      <div class="filter-section">
-        <label for="filter-auth">Auth Type</label>
-        <select id="filter-auth">
-          <option value="">Todos</option>
-          <option>AllowAnonymous</option>
-          <option>IgnoreAuthenticateAppDevice</option>
-          <option>Authenticated</option>
-        </select>
-      </div>
-
-      <div class="filter-section">
-        <label for="filter-ipclass">IP Class</label>
-        <select id="filter-ipclass">
-          <option value="">Todas</option>
-          <option value="cloudflare">Cloudflare</option>
-          <option value="external">External</option>
-          <option value="internal">Internal</option>
-        </select>
-      </div>
-
-      <div class="filter-section">
-        <label for="filter-suspicious">Suspeitos</label>
-        <select id="filter-suspicious">
-          <option value="">Todos</option>
-          <option value="yes">Apenas suspeitos</option>
-          <option value="no">Apenas seguros</option>
-        </select>
-      </div>
-
-      <div class="filter-actions">
-        <button class="btn" id="clear-filters-btn">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-          Resetar
-        </button>
-      </div>
-    </div>
-
     <!-- Charts grid -->
     <div class="charts-grid">
 
-      <!-- Timeline (linha + Chart.js) — full width -->
       <div class="card chart-card chart-wide">
         <div class="chart-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
-          Requisições por Hora
+          Volume de Requisições no Tempo
         </div>
-        <div class="chart-canvas-wrap" style="height:240px">
+        <div class="chart-canvas-wrap" style="height:220px">
           <canvas id="chart-timeline"></canvas>
         </div>
       </div>
 
-      <!-- Status codes donut -->
+      <div class="card chart-card chart-wide">
+        <div class="chart-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Latência no Tempo (ms)
+        </div>
+        <div class="chart-canvas-wrap" style="height:220px">
+          <canvas id="chart-latency"></canvas>
+        </div>
+      </div>
+
       <div class="card chart-card">
         <div class="chart-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
@@ -227,7 +228,6 @@
         </div>
       </div>
 
-      <!-- Auth type donut -->
       <div class="card chart-card">
         <div class="chart-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
@@ -238,7 +238,6 @@
         </div>
       </div>
 
-      <!-- Top 10 IPs por threat score -->
       <div class="card chart-card">
         <div class="chart-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg>
@@ -249,7 +248,6 @@
         </div>
       </div>
 
-      <!-- Top 10 paths -->
       <div class="card chart-card">
         <div class="chart-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg>
@@ -260,7 +258,6 @@
         </div>
       </div>
 
-      <!-- Heatmap -->
       <div class="card chart-card chart-wide">
         <div class="chart-title">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
@@ -275,9 +272,7 @@
     <section class="card table-section">
       <div class="table-header">
         <span class="table-title">Eventos Recentes</span>
-        <span class="result-count" id="result-count">—</span>
       </div>
-
       <div class="logs-table-wrapper" id="logs-table-wrapper">
         <table>
           <thead>
@@ -294,16 +289,17 @@
               <th>Suspeito</th>
             </tr>
           </thead>
-          <tbody id="logs-tbody"></tbody>
+          <tbody id="logs-tbody">
+            <tr><td colspan="10" class="empty-state">Configure os filtros acima e clique em <strong>Pesquisar</strong></td></tr>
+          </tbody>
         </table>
       </div>
-
       <div class="pagination" id="pagination"></div>
     </section>
 
   </main>
 
-  <!-- ── Drawer (detalhe do evento) ────────────────────────────────────────── -->
+  <!-- ── Drawer ────────────────────────────────────────────────────────────── -->
   <div class="drawer-overlay" id="drawer-overlay"></div>
   <div class="drawer" id="event-drawer">
     <div class="drawer-header">
@@ -313,14 +309,13 @@
     <div class="drawer-body" id="drawer-body"></div>
   </div>
 
-  <!-- ── Toast container ────────────────────────────────────────────────────── -->
+  <!-- ── Toast ─────────────────────────────────────────────────────────────── -->
   <div id="toast-container"></div>
 
-  <!-- ── Scripts ────────────────────────────────────────────────────────────── -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <!-- config e auth carregam imediatamente (sem rede) -->
   <script src="config.js"></script>
   <script src="auth.js"></script>
+  <!-- supabase e chart.js são carregados sob demanda pelo dashboard.js -->
   <script src="dashboard.js"></script>
 </body>
 </html>

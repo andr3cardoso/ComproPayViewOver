@@ -23,7 +23,7 @@ Dashboard web estático (HTML + CSS + JS puro) que consome a tabela `public.api_
 Abra um terminal na pasta do projeto e rode:
 
 ```bash
-python -m http.server 8080
+node serve.js
 ```
 
 Depois acesse `http://localhost:8080` no navegador.
@@ -99,19 +99,6 @@ Após isso, o indicator **"Realtime: ON"** aparecerá no topo do dashboard, e to
 | **Realtime** | Supabase channel escutando INSERTs — toasts para ameaças |
 | **Auto-refresh** | Poll de 30s opcional |
 | **Export CSV** | Exporta os registros filtrados com BOM UTF-8 |
-
----
-
-## Credenciais de acesso
-
-Login fixo validado no navegador (sem backend):
-
-| Campo | Valor |
-|---|---|
-| Usuário | `asradmin` |
-| Senha | `Kshemdhf&retwasmxgd#s2` |
-
-Para alterar, edite `APP_CREDENTIALS` em `config.js`.
 
 ---
 
